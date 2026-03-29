@@ -1,0 +1,6 @@
+{
+    "shortdesc": "Adds attempts and time tracker to the game",
+    "changelogs": {
+        "1.0.0": ["Initial release"]
+    }
+}
