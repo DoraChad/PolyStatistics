@@ -204,17 +204,18 @@ class StatisticsMod extends PolyMod {
 
         pml.registerGlobalMixin({
             type: MixinType.INSERT,
-            token: `g.textContent = a.name;`,
+            token: `(g.textContent = a.name),
+            f.appendChild(g),`,
             func: `
-            ActivePolyModLoader.getMod('polystats').attemptsDiv = document.createElement("div");
-            ActivePolyModLoader.getMod('polystats').attemptsDiv.className = "track-name";
-            f.appendChild(ActivePolyModLoader.getMod('polystats').attemptsDiv);
-            ActivePolyModLoader.getMod('polystats').attemptsDiv.textContent = ActivePolyModLoader.getMod('polystats').tRespawn + " attempts";
+            (ActivePolyModLoader.getMod('polystats').attemptsDiv = document.createElement("div")),
+            (ActivePolyModLoader.getMod('polystats').attemptsDiv.className = "track-name"),
+            f.appendChild(ActivePolyModLoader.getMod('polystats').attemptsDiv),
+            (ActivePolyModLoader.getMod('polystats').attemptsDiv.textContent = ActivePolyModLoader.getMod('polystats').tRespawn + " attempts"),
 
-            ActivePolyModLoader.getMod('polystats').timeDiv = document.createElement("div");
-            ActivePolyModLoader.getMod('polystats').timeDiv.className = "track-name";
-            f.appendChild(ActivePolyModLoader.getMod('polystats').timeDiv);
-            ActivePolyModLoader.getMod('polystats').timeDiv.textContent = ActivePolyModLoader.getMod('polystats').formatTime(ActivePolyModLoader.getMod('polystats').tTime);`,
+            (ActivePolyModLoader.getMod('polystats').timeDiv = document.createElement("div")),
+            (ActivePolyModLoader.getMod('polystats').timeDiv.className = "track-name"),
+            (f.appendChild(ActivePolyModLoader.getMod('polystats').timeDiv)),
+            (ActivePolyModLoader.getMod('polystats').timeDiv.textContent = ActivePolyModLoader.getMod('polystats').formatTime(ActivePolyModLoader.getMod('polystats').tTime)),`,
         });
 
         pml.registerGlobalMixin({
@@ -226,12 +227,11 @@ class StatisticsMod extends PolyMod {
 
         pml.registerGlobalMixin({
             type: MixinType.INSERT,
-            token: `e.append(document.createTextNode(n.get("Next Track")));
-            e.addEventListener("click", () => {
-                t.playUIClick();`,
+            token: `e.append(document.createTextNode(n.get("Next Track"))),
+                e.addEventListener("click", () => {
+                  (t.playUIClick(), c()`,
             func: `
-            ActivePolyModLoader.getMod('polystats').timer.stop();
-            ActivePolyModLoader.getMod('polystats').saveData();`,
+            , (ActivePolyModLoader.getMod('polystats').timer.stop(), ActivePolyModLoader.getMod('polystats').saveData()`,
         });
 
         pml.registerFuncMixin("Va", {
