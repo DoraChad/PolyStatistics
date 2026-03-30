@@ -201,11 +201,6 @@ class StatisticsMod extends PolyMod {
     }
 
     init = (pml) => {
-        pml.registerClassMixin("ct.prototype", "start", {
-            type: MixinType.INSERT,
-            token: "{",
-            func: "ActivePolyModLoader.getMod('polystats').timer.start();"
-        });
 
         pml.registerGlobalMixin({
             type: MixinType.INSERT,
@@ -221,6 +216,14 @@ class StatisticsMod extends PolyMod {
             ActivePolyModLoader.getMod('polystats').timeDiv.className = "track-name";
             f.appendChild(ActivePolyModLoader.getMod('polystats').timeDiv);
             ActivePolyModLoader.getMod('polystats').timeDiv.textContent = ActivePolyModLoader.getMod('polystats').formatTime(ActivePolyModLoader.getMod('polystats').tTime);`,
+        });
+
+        pml.registerGlobalMixin({
+            type: MixinType.INSERT,
+            token: `
+            start() {`,
+            func: `
+            ActivePolyModLoader.getMod('polystats').timer.start();`,
         });
 
         pml.registerGlobalMixin({
