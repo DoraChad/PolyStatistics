@@ -225,8 +225,9 @@ class StatisticsMod extends PolyMod {
 
         pml.registerGlobalMixin({
             type: MixinType.INSERT,
-            token: `(t.playUIClick(), c()`,
-            func: `, (ActivePolyModLoader.getMod('polystats').timer.stop(), ActivePolyModLoader.getMod('polystats').saveData()`,
+            token: `(t.playUIClick(), c());`,
+            func: `(ActivePolyModLoader.getMod('polystats').timer.stop();
+            ActivePolyModLoader.getMod('polystats').saveData();`,
         });
 
         pml.registerFuncMixin("Va", {
