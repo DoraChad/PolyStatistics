@@ -175,6 +175,7 @@ class StatisticsMod extends PolyMod {
     };
 
     loadData = function() {
+        console.log(this.currentTrackId, this,currentTrackName);
         if (this.officialIds.includes(this.currentTrackId)) {
             const data = this.getOfficialData();
             if (!data) return [0, 0];
@@ -191,6 +192,7 @@ class StatisticsMod extends PolyMod {
     }
 
     saveData = function() {
+        console.log(this.currentTrackId, this,currentTrackName);
         if (this.officialIds.includes(this.currentTrackId)) {
             this.saveOfficialData();
         } else if (this.communityIds.includes(this.currentTrackId)) {
@@ -206,7 +208,8 @@ class StatisticsMod extends PolyMod {
             type: MixinType.INSERT,
             token: `(g.textContent = a.name),
             f.appendChild(g),`,
-            func: `(ActivePolyModLoader.getMod('polystats').attemptsDiv = document.createElement("div")),
+            func: `
+            (ActivePolyModLoader.getMod('polystats').attemptsDiv = document.createElement("div")),
             (ActivePolyModLoader.getMod('polystats').attemptsDiv.className = "track-name"),
             f.appendChild(ActivePolyModLoader.getMod('polystats').attemptsDiv),
             (ActivePolyModLoader.getMod('polystats').attemptsDiv.textContent = ActivePolyModLoader.getMod('polystats').tRespawn + " attempts"),
@@ -214,33 +217,37 @@ class StatisticsMod extends PolyMod {
             (ActivePolyModLoader.getMod('polystats').timeDiv = document.createElement("div")),
             (ActivePolyModLoader.getMod('polystats').timeDiv.className = "track-name"),
             (f.appendChild(ActivePolyModLoader.getMod('polystats').timeDiv)),
-            (ActivePolyModLoader.getMod('polystats').timeDiv.textContent = ActivePolyModLoader.getMod('polystats').formatTime(ActivePolyModLoader.getMod('polystats').tTime)),`,
+            (ActivePolyModLoader.getMod('polystats').timeDiv.textContent = ActivePolyModLoader.getMod('polystats').formatTime(ActivePolyModLoader.getMod('polystats').tTime)),`
         });
 
         pml.registerGlobalMixin({
             type: MixinType.INSERT,
             token: `start() {`,
-            func: `ActivePolyModLoader.getMod('polystats').timer.start();`
+            func: `
+            ActivePolyModLoader.getMod('polystats').timer.start();`
         });
 
         pml.registerGlobalMixin({
             type: MixinType.INSERT,
             token: `(t.playUIClick(), c());`,
-            func: `ActivePolyModLoader.getMod('polystats').timer.stop();
+            func: `
+            ActivePolyModLoader.getMod('polystats').timer.stop();
             ActivePolyModLoader.getMod('polystats').saveData();`
         });
 
-        pml.registerFuncMixin("Va", {
+        pml.registerGlobalMixin({
             type: MixinType.INSERT,
-            token: "{",
-            func: `ActivePolyModLoader.getMod('polystats').timer.stop();
+            token: `(Va = function () {`,
+            func: `
+            ActivePolyModLoader.getMod('polystats').timer.stop();
             ActivePolyModLoader.getMod('polystats').saveData();`
         });
 
-        pml.registerFuncMixin("Qa", {
+        pml.registerGlobalMixin({
             type: MixinType.INSERT,
-            token: "{",
-            func: `ActivePolyModLoader.getMod('polystats').tRespawn += 1;
+            token: `(Qa = function () {`,
+            func: `
+            ActivePolyModLoader.getMod('polystats').tRespawn += 1;
             ActivePolyModLoader.getMod('polystats').timer.stop();
             ActivePolyModLoader.getMod('polystats').attemptsDiv.textContent = ActivePolyModLoader.getMod('polystats').tRespawn + "attempts";`
         });
@@ -248,7 +255,8 @@ class StatisticsMod extends PolyMod {
         pml.registerGlobalMixin({
             type: MixinType.INSERT,
             token: `W = (t, n, i, a, c) => {`,
-            func: `ActivePolyModLoader.getMod('polystats').currentTrackId = n.getId();
+            func: `
+            ActivePolyModLoader.getMod('polystats').currentTrackId = n.getId();
             ActivePolyModLoader.getMod('polystats').currentTrackName = t.name;
             [ActivePolyModLoader.getMod('polystats').tRespawn, ActivePolyModLoader.getMod('polystats').tTime] = ActivePolyModLoader.getMod('polystats').loadData();`
         });
