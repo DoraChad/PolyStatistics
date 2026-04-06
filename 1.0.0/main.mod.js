@@ -3,31 +3,6 @@ import {
   MixinType,
 } from "https://cdn.polymodloader.com/cb/PolyTrackMods/PolyModLoader/0.6.0/PolyTypes.js";
 
-class Stopwatch {
-    constructor() {
-        this.interval = null;
-        this.active = false;
-    }
-
-    start() {
-        if (this.active) return;
-        this.active = true;
-        this.interval = setInterval(() => {
-            tTime++;
-            if (!timeDiv) this.stop();
-            timeDiv.textContent = formatTime(tTime);
-        }, 1000);
-    }
-
-    stop() {
-        if (!this.active) return;
-        this.active = false;
-        clearInterval(this.interval);
-    }
-    clear() {
-        tTime = 0;
-    }
-}
 
 class StatisticsMod extends PolyMod {
     tRespawn = 0;
@@ -36,7 +11,31 @@ class StatisticsMod extends PolyMod {
     currentTrackName;
     attemptsDiv;
     timeDiv;
-    timer = new Stopwatch();
+
+    timer_interval = null;
+    timer_active = false;
+
+    timer_start = function() {
+        if (this.timer_active) return;
+        this.timer_active = true;
+        this.timer_interval = setInterval(() => {
+            this.tTime++;
+            if (this.timeDiv) {
+                this.timeDiv.textContent = this.formatTime(this.tTime);
+            } else {
+                 this.timer_stop();
+            }
+        }, 1000);
+    }
+
+    timer_stop = function() {
+        if (!this.timer_active) return;
+        this.timer_active = false;
+        clearInterval(this.timer_interval);
+    }
+    timer_clear = function() {
+        this.tTime = 0;
+    }
 
     officialIds = [
     "5803f9e963625804e3de3246d043dc7dde847aa32e991f7f7326b0453f1fa038",
@@ -125,7 +124,7 @@ class StatisticsMod extends PolyMod {
     }
 
     getOfficialData = function() {
-        const data = JSON.parse(this.localStorage.getItem(`polystats_official`));
+        const data = JSON.parse(window.localStorage.getItem(`polystats_official`));
         if (!data) {
             return;
         }
@@ -138,31 +137,31 @@ class StatisticsMod extends PolyMod {
     };
 
     saveOfficialData = function() {
-        const data = JSON.parse(this.localStorage.getItem("polystats_official")) || {};
+        const data = JSON.parse(window.localStorage.getItem("polystats_official")) || {};
 
         data[this.officialIds.indexOf(this.currentTrackId)] = [this.tRespawn, this.tTime];
 
-        this.localStorage.setItem("polystats_official", JSON.stringify(data));
+        window.localStorage.setItem("polystats_official", JSON.stringify(data));
     }
 
     saveCommunityData = function() {
-        const data = JSON.parse(this.localStorage.getItem("polystats_community")) || {};
+        const data = JSON.parse(window.localStorage.getItem("polystats_community")) || {};
 
         data[this.communityIds.indexOf(this.currentTrackId)] = [this.tRespawn, this.tTime];
 
-        this.localStorage.setItem("polystats_community", JSON.stringify(data));
+        window.localStorage.setItem("polystats_community", JSON.stringify(data));
     }
 
     saveCustomData = function() {
-        const data = JSON.parse(this.localStorage.getItem(`polytrack_v5_prod_track_${this.currentTrackName}`)) || {};
+        const data = JSON.parse(window.localStorage.getItem(`polytrack_v5_prod_track_${this.currentTrackName}`)) || {};
 
         data.polyStats = [this.tRespawn, this.tTime];
 
-        this.localStorage.setItem(`polytrack_v5_prod_track_${this.currentTrackName}`, JSON.stringify(data));
+        window.localStorage.setItem(`polytrack_v5_prod_track_${this.currentTrackName}`, JSON.stringify(data));
     }
 
     getCommunityData = function() {
-        const data = JSON.parse(this.localStorage.getItem(`polystats_community`));
+        const data = JSON.parse(window.localStorage.getItem(`polystats_community`));
         if (!data) {
             return;
         }
@@ -175,7 +174,7 @@ class StatisticsMod extends PolyMod {
     };
 
     loadData = function() {
-        console.log(this.currentTrackId, this,currentTrackName);
+        console.log(this.currentTrackId, this.currentTrackName);
         if (this.officialIds.includes(this.currentTrackId)) {
             const data = this.getOfficialData();
             if (!data) return [0, 0];
@@ -185,14 +184,14 @@ class StatisticsMod extends PolyMod {
             if (!data) return [0, 0];
             return data;
         } else {
-            const data = JSON.parse(this.localStorage.getItem(`polytrack_v5_prod_track_${this.currentTrackName}`)).polyStats;
+            const data = JSON.parse(window.localStorage.getItem(`polytrack_v5_prod_track_${this.currentTrackName}`)).polyStats;
             if (!data) return [0, 0];
             return data;
         }
     }
 
     saveData = function() {
-        console.log(this.currentTrackId, this,currentTrackName);
+        console.log(this.currentTrackId, this.currentTrackName);
         if (this.officialIds.includes(this.currentTrackId)) {
             this.saveOfficialData();
         } else if (this.communityIds.includes(this.currentTrackId)) {
@@ -202,7 +201,7 @@ class StatisticsMod extends PolyMod {
         }
     }
 
-    init = (pml) => {
+    preInit = (pml) => {
 
         pml.registerGlobalMixin({
             type: MixinType.INSERT,
@@ -224,14 +223,14 @@ class StatisticsMod extends PolyMod {
             type: MixinType.INSERT,
             token: `start() {`,
             func: `
-            ActivePolyModLoader.getMod('polystats').timer.start();`
+            ActivePolyModLoader.getMod('polystats').timer_start();`
         });
 
         pml.registerGlobalMixin({
             type: MixinType.INSERT,
             token: `(t.playUIClick(), c());`,
             func: `
-            ActivePolyModLoader.getMod('polystats').timer.stop();
+            ActivePolyModLoader.getMod('polystats').timer_stop();
             ActivePolyModLoader.getMod('polystats').saveData();`
         });
 
@@ -239,7 +238,7 @@ class StatisticsMod extends PolyMod {
             type: MixinType.INSERT,
             token: `(Va = function () {`,
             func: `
-            ActivePolyModLoader.getMod('polystats').timer.stop();
+            ActivePolyModLoader.getMod('polystats').timer_stop();
             ActivePolyModLoader.getMod('polystats').saveData();`
         });
 
@@ -248,8 +247,8 @@ class StatisticsMod extends PolyMod {
             token: `(Qa = function () {`,
             func: `
             ActivePolyModLoader.getMod('polystats').tRespawn += 1;
-            ActivePolyModLoader.getMod('polystats').timer.stop();
-            ActivePolyModLoader.getMod('polystats').attemptsDiv.textContent = ActivePolyModLoader.getMod('polystats').tRespawn + "attempts";`
+            ActivePolyModLoader.getMod('polystats').timer_stop();
+            ActivePolyModLoader.getMod('polystats').attemptsDiv.textContent = ActivePolyModLoader.getMod('polystats').tRespawn + " attempts";`
         });
 
         pml.registerGlobalMixin({
