@@ -220,14 +220,14 @@ class StatisticsMod extends PolyMod {
         pml.registerGlobalMixin({
             type: MixinType.INSERT,
             token: `start() {`,
-            func: `ActivePolyModLoader.getMod('polystats').timer.start();`,
+            func: `ActivePolyModLoader.getMod('polystats').timer.start();`
         });
 
         pml.registerGlobalMixin({
             type: MixinType.INSERT,
             token: `(t.playUIClick(), c());`,
             func: `(ActivePolyModLoader.getMod('polystats').timer.stop();
-            ActivePolyModLoader.getMod('polystats').saveData();`,
+            ActivePolyModLoader.getMod('polystats').saveData();`
         });
 
         pml.registerFuncMixin("Va", {
@@ -250,7 +250,7 @@ class StatisticsMod extends PolyMod {
             token: `W = (t, n, i, a, c) => {`,
             func: `ActivePolyModLoader.getMod('polystats').currentTrackId = n.getId();
             ActivePolyModLoader.getMod('polystats').currentTrackName = t.name;
-            [ActivePolyModLoader.getMod('polystats').tRespawn, ActivePolyModLoader.getMod('polystats').tTime] = ActivePolyModLoader.getMod('polystats').loadData();`,
+            [ActivePolyModLoader.getMod('polystats').tRespawn, ActivePolyModLoader.getMod('polystats').tTime] = ActivePolyModLoader.getMod('polystats').loadData();`
         });
         
     };
