@@ -125,7 +125,7 @@ class StatisticsMod extends PolyMod {
     }
 
     getOfficialData = function() {
-        const data = JSON.parse(this.this.localStorage.getItem(`polystats_official`));
+        const data = JSON.parse(this.localStorage.getItem(`polystats_official`));
         if (!data) {
             return;
         }
@@ -226,7 +226,7 @@ class StatisticsMod extends PolyMod {
         pml.registerGlobalMixin({
             type: MixinType.INSERT,
             token: `(t.playUIClick(), c());`,
-            func: `(ActivePolyModLoader.getMod('polystats').timer.stop();
+            func: `ActivePolyModLoader.getMod('polystats').timer.stop();
             ActivePolyModLoader.getMod('polystats').saveData();`
         });
 
@@ -241,7 +241,7 @@ class StatisticsMod extends PolyMod {
             type: MixinType.INSERT,
             token: "{",
             func: `ActivePolyModLoader.getMod('polystats').tRespawn += 1;
-            ActivePolyModLoader.getMod('polystats').timer.stop()
+            ActivePolyModLoader.getMod('polystats').timer.stop();
             ActivePolyModLoader.getMod('polystats').attemptsDiv.textContent = ActivePolyModLoader.getMod('polystats').tRespawn + "attempts";`
         });
 
